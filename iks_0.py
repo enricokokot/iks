@@ -2,8 +2,6 @@ import asyncio
 from random import random
 
 def kreiraj_pid():
-    # for i in range(10):
-    #     yield i¸
     i = 0
     while True:
         yield i
@@ -29,17 +27,14 @@ class Objekt:
 
 async def simulator_ulaza(vrijeme_medudolazaka):
     delta = vrijeme_medudolazaka / 1000
+    broj_procesa = 100
+    procesi = []
 
-    # for i in 10:
-    #     loop.create_task(otvori_proces())
+    for i in range(broj_procesa):
+        procesi.append(loop.create_task(otvori_proces()))
+        await asyncio.sleep(delta)
 
-    proces_1 =  loop.create_task(otvori_proces())
-    await asyncio.sleep(delta)
-    proces_2 =  loop.create_task(otvori_proces())
-    await asyncio.sleep(delta)
-    proces_3 =  loop.create_task(otvori_proces())
-
-    await asyncio.wait([proces_1, proces_2, proces_3])
+    await asyncio.wait(procesi)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(simulator_ulaza(1000))
