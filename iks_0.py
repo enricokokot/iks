@@ -1,5 +1,6 @@
 import asyncio
 from random import random
+import matplotlib.pyplot as plt
 
 def kreiraj_pid():
     i = 0
@@ -10,11 +11,14 @@ def kreiraj_pid():
 gen = kreiraj_pid()
 
 async def otvori_proces():
+    global trenutni_procesi
     imena = ["Balan", "Calan", "Dalan"]
     pid = next(gen)
 
+    trenutni_procesi.append("*")
     for ime in imena:
         await loop.create_task(stvori_objekt(pid, ime))
+    trenutni_procesi.pop()
     
 async def stvori_objekt(pid, ime):
     kasnjenje = random()
@@ -30,11 +34,31 @@ async def simulator_ulaza(vrijeme_medudolazaka):
     broj_procesa = 100
     procesi = []
 
-    for i in range(broj_procesa):
+    for _ in range(broj_procesa):
         procesi.append(loop.create_task(otvori_proces()))
         await asyncio.sleep(delta)
 
     await asyncio.wait(procesi)
 
+async def vrati_vrijednost_varijable(varijabla, interval):
+    broj_aktivnih_procesa_u_vremenu = [] 
+    counter = 0
+
+    while counter < 2/interval:
+        broj_trenutnih_procesa = len(varijabla)
+        if broj_trenutnih_procesa == 0:
+            counter += 1
+        if broj_trenutnih_procesa > 0:
+            counter = 0
+        broj_aktivnih_procesa_u_vremenu.append(broj_trenutnih_procesa)
+        # print("broj_trenutnih_procesa: ", broj_trenutnih_procesa)
+        await asyncio.sleep(interval)
+
+    plt.plot(broj_aktivnih_procesa_u_vremenu)
+    plt.show()
+
+trenutni_procesi = []
+
 loop = asyncio.get_event_loop()
-loop.run_until_complete(simulator_ulaza(1000))
+zadace = asyncio.gather(simulator_ulaza(1000), vrati_vrijednost_varijable(trenutni_procesi, 0.1))
+loop.run_until_complete(zadace)
