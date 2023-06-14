@@ -7,15 +7,15 @@ def expr(lam):
     # return -math.log(np.random.uniform(0, 1) / lam)
     return expovariate(lam)
 
-service = np.array(100*[0], dtype=float)
+service = np.array(1000*[0], dtype=float)
 # service = 100*[0]
-for i in range(100): service[i] = expr(0.5)
+for i in range(1000): service[i] = expr(0.5)
 
-arrival = np.array(100*[0], dtype=float)
+arrival = np.array(1000*[0], dtype=float)
 ### FORGIVE ME FATHER
-arrival2 = np.array(100*[0], dtype=float)
+arrival2 = np.array(1000*[0], dtype=float)
 # for i in range(1, 100): arrival[i] = arrival[i-1] + expr(0.5)
-for i in range(1, 100): 
+for i in range(1, 1000):
     value = expr(0.5)
     arrival[i] = arrival[i-1] + value
     arrival2[i] = value
@@ -28,9 +28,9 @@ print(np.average(arrival))
 # plt.plot(arrival)
 # plt.show()
 
-enter_service_time, leave_service_time = np.array(100*[0], dtype=float), np.array(100*[0], dtype=float)
+enter_service_time, leave_service_time = np.array(1000*[0], dtype=float), np.array(1000*[0], dtype=float)
 leave_service_time[0] = service[0]
-for i in range(1, 100):
+for i in range(1, 1000):
     if leave_service_time[i-1] < arrival[i]: enter_service_time[i] = arrival[i]
     else: enter_service_time[i] = leave_service_time[i-1]
     leave_service_time[i] = enter_service_time[i] + service[i]
@@ -79,27 +79,50 @@ plt.show()
 deez = list(zip(arrival, leave_service_time))
 number_of_processes = []
 stack = []
-for arr, lst in deez:
-    for value in stack:
-        if value < arr:
-            stack.remove(value)
-    stack.append(lst)
+# for arr, lst in deez:
+#     for value in stack:
+#         if value < arr:
+#             stack.remove(value)
+#     stack.append(lst)
+#     number_of_processes.append(len(stack))
+
+# print(number_of_processes)
+# print(np.average(number_of_processes))
+
+# plt.plot(number_of_processes)
+# plt.plot([np.average(number_of_processes)] * len(deez))
+# plt.show()
+
+# print(f"leave_service_time[:5]: {leave_service_time[:5]}")
+# print(f"arrival[:5]: {arrival[:5]}")
+
+lista_vremena = np.arange(0, 2200, 0.1)
+print(f"lista_vremena: {lista_vremena}")
+for trenutak in lista_vremena:
+    for idx, dolazak in enumerate(arrival):
+        if dolazak <= trenutak:
+            arrival[idx] = 2500
+            stack.append("*")
+    for idx, odlazak in enumerate(leave_service_time):
+        if odlazak <= trenutak:
+            leave_service_time[idx] = 2500
+            stack.pop()
     number_of_processes.append(len(stack))
 
-print(number_of_processes)
-print(np.average(number_of_processes))
-
 plt.plot(number_of_processes)
-plt.plot([np.average(number_of_processes)] * len(deez))
+# plt.bar(number_of_processes)
+plt.plot([np.average(number_of_processes)] * len(number_of_processes))
+plt.title("Number of processes at certain time")
 plt.show()
-
 
 ### MEĐUDOLAZAK U SVAKOM TRENUTKU / PROSJEČNO VRIJEME MEĐUDOLAZAKA
 plt.plot(arrival2)
 plt.plot([np.average(arrival2)] * len(arrival2))
+plt.title("Time of arrival between processes")
 plt.show()
 
 ### VRIJEME OBRADE ZA SVAKOG KORISNIKA / PROSJEČNO VRIJEME OBRADE KORISNIKA
 plt.plot(service)
 plt.plot([np.average(service)] * len(service))
+plt.title("Processing time per process")
 plt.show()
