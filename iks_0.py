@@ -1,5 +1,5 @@
 import asyncio
-from random import random
+from random import expovariate
 import matplotlib.pyplot as plt
 
 def kreiraj_pid():
@@ -21,7 +21,8 @@ async def otvori_proces():
     trenutni_procesi.pop()
     
 async def stvori_objekt(pid, ime):
-    kasnjenje = random()
+    # kasnjenje = random()
+    kasnjenje = expovariate(0.5)
     await asyncio.sleep(kasnjenje)
     return Objekt(pid, ime, kasnjenje)
 
@@ -29,14 +30,16 @@ class Objekt:
     def __init__(self, pid, ime, kasnjenje):
         print(f"Objekt {ime} je kreiran, PID={pid} kasnjenje {kasnjenje*1000:.2f} ms")
 
-async def simulator_ulaza(vrijeme_medudolazaka):
-    delta = vrijeme_medudolazaka / 1000
-    broj_procesa = 100
+async def simulator_ulaza(broj_procesa):
     procesi = []
+    counter = 0.1
 
     for _ in range(broj_procesa):
         procesi.append(loop.create_task(otvori_proces()))
-        await asyncio.sleep(delta)
+        if counter < 0:
+            counter = 0
+        elif counter > 0: counter = counter - 0.0001875
+        await asyncio.sleep(counter*expovariate(0.5))
 
     await asyncio.wait(procesi)
 
