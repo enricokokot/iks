@@ -12,13 +12,12 @@ service = np.array(1000*[0], dtype=float)
 for i in range(1000): service[i] = expr(0.5)
 
 arrival = np.array(1000*[0], dtype=float)
-### FORGIVE ME FATHER
-arrival2 = np.array(1000*[0], dtype=float)
+time_between_arrivals = np.array(1000*[0], dtype=float)
 # for i in range(1, 100): arrival[i] = arrival[i-1] + expr(0.5)
 for i in range(1, 1000):
     value = expr(0.5)
     arrival[i] = arrival[i-1] + value
-    arrival2[i] = value
+    time_between_arrivals[i] = value
 
 # print(service)
 print(np.average(service))
@@ -43,14 +42,14 @@ x = list(zip(enter_service_time, leave_service_time))
 # plt.grid()
 # plt.show()
 
-queue_time = leave_service_time - arrival
-average_queue_time = np.average(queue_time)
-# plt.plot(queue_time)
-# plt.show()
-
-waiting_time = enter_service_time - arrival
+waiting_time = leave_service_time - arrival
 average_waiting_time = np.average(waiting_time)
 # plt.plot(waiting_time)
+# plt.show()
+
+queue_time = enter_service_time - arrival
+average_queue_time = np.average(queue_time)
+# plt.plot(queue_time)
 # plt.show()
 
 # plt.bar(list(range(len(leave_service_time))), leave_service_time, color="#6f4e7c")
@@ -69,17 +68,17 @@ average_waiting_time = np.average(waiting_time)
 #     print(np.min(list))
 
 # veća lambda -> manje korisnika u sustavu
-print(0.1 * average_queue_time)
+print(0.1 * average_waiting_time)
 
 plt.bar(list(range(len(leave_service_time))), leave_service_time-arrival, color="#6f4e7c")
 plt.bar(list(range(len(enter_service_time))), enter_service_time-arrival, color="#f6c85f")
 plt.show()
 
 ### BROJ PROCESA U MNOGIM TRENUCIMA / PROSJEČNI BROJ PROCESA U SVIM TRENUCIMA
-deez = list(zip(arrival, leave_service_time))
+# process_arrival_and_lst = list(zip(arrival, leave_service_time))
 number_of_processes = []
 stack = []
-# for arr, lst in deez:
+# for arr, lst in process_arrival_and_lst:
 #     for value in stack:
 #         if value < arr:
 #             stack.remove(value)
@@ -90,7 +89,7 @@ stack = []
 # print(np.average(number_of_processes))
 
 # plt.plot(number_of_processes)
-# plt.plot([np.average(number_of_processes)] * len(deez))
+# plt.plot([np.average(number_of_processes)] * len(process_arrival_and_lst))
 # plt.show()
 
 # print(f"leave_service_time[:5]: {leave_service_time[:5]}")
@@ -116,8 +115,8 @@ plt.title("Number of processes at certain time")
 plt.show()
 
 ### MEĐUDOLAZAK U SVAKOM TRENUTKU / PROSJEČNO VRIJEME MEĐUDOLAZAKA
-plt.plot(arrival2)
-plt.plot([np.average(arrival2)] * len(arrival2))
+plt.plot(time_between_arrivals)
+plt.plot([np.average(time_between_arrivals)] * len(time_between_arrivals))
 plt.title("Time of arrival between processes")
 plt.show()
 
